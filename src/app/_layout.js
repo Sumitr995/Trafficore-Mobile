@@ -16,6 +16,7 @@ export default function RootLayout() {
             contentStyle: { backgroundColor: '#101010' },
           }}
         >
+          <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
           <Stack.Screen name="summary" options={{ title: 'Trip Summary' }} />
         </Stack>

@@ -12,6 +12,7 @@ function makeHtml(lat, lon, key) {
 <style>html,body,#map{height:100%;margin:0;background:#101010}
 .you-pill{background:#00d992;color:#101010;font-weight:900;font-size:13px;padding:6px 12px;border-radius:20px;border:2px solid #fff;font-family:sans-serif;white-space:nowrap}
 .dest-pill{background:#ff6b6b;color:#101010;font-weight:900;font-size:12px;padding:5px 10px;border-radius:16px;border:2px solid #fff;font-family:sans-serif;white-space:nowrap}
+.sig{font-size:18px;line-height:1}
 .leaflet-container{background:#101010}</style></head>
 <body><div id="map"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -24,6 +25,8 @@ window.updatePos=function(la,lo,f){you.setLatLng([la,lo]);if(f){map.panTo([la,lo
 window.recenter=function(){map.flyTo(you.getLatLng(),16);};
 window.setDest=function(la,lo,label){if(destMark){map.removeLayer(destMark);}destMark=L.marker([la,lo],{icon:L.divIcon({className:'',html:'<div class="dest-pill">'+label+'</div>',iconSize:[90,30],iconAnchor:[45,15]})}).addTo(map);};
 window.setRoute=function(pts){if(routeLine){map.removeLayer(routeLine);}routeLine=L.polyline(pts,{color:'#00d992',weight:5,opacity:0.95}).addTo(map);map.fitBounds(routeLine.getBounds().pad(0.3));};
+var sigLayer=null;
+window.setSignals=function(pts){if(sigLayer){map.removeLayer(sigLayer);}sigLayer=L.layerGroup(pts.map(function(p){return L.marker([p[0],p[1]],{icon:L.divIcon({className:'',html:'<div class="sig">🚦</div>',iconSize:[22,22],iconAnchor:[11,11]}),interactive:false});})).addTo(map);};
 </script></body></html>`;
 }
 
@@ -37,6 +40,7 @@ export default function DriverMap({
   showFab = null, // null = auto (hide when bare)
   destination = null,
   routePoints = null,
+  signals = null, // [[lat,lon]…] real OSM traffic lights
   follow = false,
 }) {
   const { location, status, errorMsg, retry } = useDriverLocation();
@@ -83,6 +87,15 @@ export default function DriverMap({
       );
     }
   }, [ready, routePoints?.length]);
+
+  // Real traffic-signal pins (🚦), pushed once per fetch
+  useEffect(() => {
+    if (signals?.length && ready && webRef.current) {
+      webRef.current.injectJavaScript(
+        `window.setSignals(${JSON.stringify(signals)});true;`
+      );
+    }
+  }, [ready, signals?.length]);
 
   function centerOnMe() {
     webRef.current?.injectJavaScript(`window.recenter();true;`);

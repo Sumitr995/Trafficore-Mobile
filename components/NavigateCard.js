@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Text, TouchableOpacity, View } from 'react-native';
 import DriverMap from './DriverMap';
 import TripBanner from './TripBanner';
+import SignalPanel from './SignalPanel';
 import { useDriverLocation } from '../hooks/useLocation';
 import { useTrip } from '../lib/trip';
 import {
@@ -34,6 +35,7 @@ export default function NavigateCard({
   const [error, setError] = useState('');
   const [follow, setFollow] = useState(false);
   const [arrived, setArrived] = useState(false);
+  const [sigs, setSigs] = useState([]); // real OSM signals → map pins
   const destRef = useRef(null);
   const lastFetch = useRef(0);
 
@@ -120,6 +122,7 @@ export default function NavigateCard({
             bare
             destination={dest}
             routePoints={route?.points || null}
+            signals={sigs.map((s) => [s.latitude, s.longitude])}
             follow={follow}
           />
         </View>
@@ -195,6 +198,11 @@ export default function NavigateCard({
           />
         </View>
       )}
+      <SignalPanel
+        origin={origin}
+        ambulanceId={trip?.id || 'AMB-DEMO'}
+        onSignals={setSigs}
+      />
     </View>
   );
 }

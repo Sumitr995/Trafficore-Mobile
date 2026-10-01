@@ -32,6 +32,14 @@ export default function HomeScreen() {
       <View className="flex-1">
         {t.status === 'accepted' ? (
           <NavigateCard expanded />
+        ) : t.status === 'picked_up' && t.hospital ? (
+          <NavigateCard
+            expanded
+            destination={t.hospital}
+            destLabel="HOSPITAL"
+            destName="hospital"
+            arrivedHint="tap “Arrived at Hospital” below"
+          />
         ) : (
           <DriverMap bare showFab follow={navigating} />
         )}

@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import EmergencyCard from './EmergencyCard';
-import TripBanner from './TripBanner';
+import HospitalSheet from './HospitalSheet';
 
 // Uber-style bottom sheet: one card per driver state, handle on top.
 export default function HomeSheet({ t }) {
@@ -71,13 +71,19 @@ export default function HomeSheet({ t }) {
         />
       )}
 
-      {(t.status === 'accepted' || t.status === 'picked_up') && (
-        <TripBanner
-          status={t.status}
-          trip={t.trip}
-          onPickedUp={t.pickedUp}
-          onArrived={t.arrived}
-        />
+      {/* picked_up: search hospitals until one is chosen (nav view then
+          carries the trip actions). Accepted phase hides this sheet. */}
+      {t.status === 'picked_up' && !t.hospital && <HospitalSheet />}
+      {t.status === 'picked_up' && t.hospital && (
+        <TouchableOpacity
+          className="flex-row items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-2.5"
+          onPress={() => t.setHospital(null)}
+        >
+          <Text className="text-primary text-xs font-black flex-1" numberOfLines={1}>
+            🏥 {t.hospital.name}
+          </Text>
+          <Text className="text-primary text-xs font-extrabold">Change ✕</Text>
+        </TouchableOpacity>
       )}
     </View>
   );

@@ -12,11 +12,12 @@ import { useDriverLocation } from '../hooks/useLocation';
 import { useTrip } from '../lib/trip';
 import { fetchHospitals, formatDist } from '../lib/hospitals';
 import NameSearch from './NameSearch';
+import TopHospitals from './TopHospitals';
 
 // Real nearby hospitals (Overpass) + Google Maps bridge (no keys anywhere).
 export default function HospitalSheet() {
   const { location } = useDriverLocation();
-  const { setHospital } = useTrip();
+  const { setHospital, trip } = useTrip();
   const origin = location?.coords
     ? { latitude: location.coords.latitude, longitude: location.coords.longitude }
     : null;
@@ -99,6 +100,14 @@ export default function HospitalSheet() {
 
       {/* automatic: type a name, tap, done — no coordinates typed */}
       <NameSearch origin={origin} onPick={(h) => setHospital(h)} />
+
+      {phase === 'ready' && list.length > 0 && (
+        <TopHospitals
+          candidates={list}
+          severity={trip?.severity}
+          onNavigate={(h) => setHospital(h)}
+        />
+      )}
 
       {phase === 'loading' && (
         <View className="flex-row items-center gap-2 py-4 justify-center">

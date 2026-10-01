@@ -1,0 +1,16 @@
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css';
+
+@import 'nativewind/theme';
+
+/* Trafficore tokens — same values as lib/theme.js COLORS.
+   ink = COLORS.text (#f2f2f2). Usage: bg-background, bg-primary,
+   border-border, text-ink, text-muted, text-primary. */
+@theme {
+  --color-background: #101010;
+  --color-primary: #00d992;
+  --color-border: #3d3a39;
+  --color-ink: #f2f2f2;
+  --color-muted: #8b949e;
+}

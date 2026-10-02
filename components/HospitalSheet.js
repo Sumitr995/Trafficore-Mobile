@@ -17,7 +17,7 @@ import TopHospitals from './TopHospitals';
 
 // Real nearby hospitals (Overpass) + Google Maps bridge (no keys anywhere).
 export default function HospitalSheet() {
-  const { location } = useDriverLocation();
+  const { location, status } = useDriverLocation();
   const { setHospital, trip } = useTrip();
   const origin = location?.coords
     ? { latitude: location.coords.latitude, longitude: location.coords.longitude }
@@ -106,6 +106,16 @@ export default function HospitalSheet() {
       <Text className="text-muted text-[10px]">
         Hospital data: © OpenStreetMap contributors • Powered by Geoapify
       </Text>
+
+      {!origin && (
+        <View className="rounded-2xl border border-[#ff6b6b]/40 bg-[#ff6b6b]/10 px-4 py-3">
+          <Text className="text-[#ff6b6b] text-xs font-bold">
+            {status === 'denied'
+              ? 'GPS denied — enable Location in settings, then ↻ Refresh.'
+              : 'Waiting for GPS fix… the list loads automatically.'}
+          </Text>
+        </View>
+      )}
 
       {/* automatic: type a name, tap, done — no coordinates typed */}
       <NameSearch origin={origin} onPick={(h) => setHospital(h)} />

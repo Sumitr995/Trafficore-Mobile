@@ -1,8 +1,9 @@
 import { Text, TouchableOpacity, View } from 'react-native';
+import { ArrowRight, Check, TrafficCone } from 'lucide-react-native';
 
 const STEPS = [
-  { key: 'accepted', label: 'Accepted request' },
-  { key: 'picked_up', label: 'Picked up patient' },
+  { key: 'accepted', label: 'Request accepted' },
+  { key: 'picked_up', label: 'Patient on board' },
   { key: 'hospital', label: 'To hospital' },
   { key: 'arrived', label: 'Arrived' },
 ];
@@ -20,7 +21,7 @@ export default function TripBanner({ status, trip, onPickedUp, onArrived }) {
     <View className="bg-[#161616] border border-border rounded-3xl p-5 gap-4">
       <View className="flex-row items-center justify-between">
         <Text className="text-primary text-[11px] font-black tracking-widest">
-          {status === 'accepted' ? '● ON TRIP — TO PATIENT' : '● ON TRIP — TO HOSPITAL'}
+          {status === 'accepted' ? '● EN ROUTE — PATIENT' : '● EN ROUTE — HOSPITAL'}
         </Text>
         <Text className="text-muted text-[11px] font-bold">{trip.id}</Text>
       </View>
@@ -39,8 +40,7 @@ export default function TripBanner({ status, trip, onPickedUp, onArrived }) {
         </View>
       </View>
 
-      {/* vertical timeline */}
-      <View className="gap-0">
+      <View>
         {STEPS.map((s, i) => {
           const done = i <= idx;
           const last = i === STEPS.length - 1;
@@ -66,32 +66,35 @@ export default function TripBanner({ status, trip, onPickedUp, onArrived }) {
 
       {status === 'accepted' && (
         <TouchableOpacity
-          className="h-14 rounded-full bg-primary items-center justify-center"
+          className="h-14 rounded-full bg-primary flex-row items-center justify-center gap-1.5"
           onPress={onPickedUp}
           activeOpacity={0.8}
         >
-          <Text className="font-black text-base" style={{ color: '#101010' }}>
-            Picked Up Patient ✓
+          <Check size={17} color="#101010" />
+          <Text className="font-black text-base tracking-wide" style={{ color: '#101010' }}>
+            PATIENT ON BOARD
           </Text>
         </TouchableOpacity>
       )}
       {status === 'picked_up' && (
         <TouchableOpacity
-          className="h-14 rounded-full bg-primary items-center justify-center"
+          className="h-14 rounded-full bg-primary flex-row items-center justify-center gap-1.5"
           onPress={onArrived}
           activeOpacity={0.8}
         >
-          <Text className="font-black text-base" style={{ color: '#101010' }}>
-            Arrived at Hospital →
+          <Text className="font-black text-base tracking-wide" style={{ color: '#101010' }}>
+            ARRIVED
           </Text>
+          <ArrowRight size={17} color="#101010" />
         </TouchableOpacity>
       )}
       <TouchableOpacity
-        className="h-12 rounded-full border border-primary/50 items-center justify-center"
+        className="h-12 rounded-full border border-primary/50 flex-row items-center justify-center gap-1.5"
         onPress={() => alert('Signal requested (MOCK — hardware later)')}
       >
-        <Text className="text-primary font-extrabold text-[13px]">
-          🚦 Request Green Corridor (MOCK)
+        <TrafficCone size={15} color="#00d992" />
+        <Text className="text-primary font-extrabold text-[13px] tracking-widest">
+          GREEN CORRIDOR — MOCK
         </Text>
       </TouchableOpacity>
     </View>

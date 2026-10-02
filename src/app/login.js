@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { Redirect } from 'expo-router';
+import { Ambulance } from 'lucide-react-native';
 import { DEMO_DRIVER, useAuth } from '../../lib/auth';
 
 export default function LoginScreen() {
@@ -35,7 +36,7 @@ export default function LoginScreen() {
       {/* Brand */}
       <View className="items-center mb-8">
         <View className="w-20 h-20 rounded-3xl bg-primary items-center justify-center mb-4">
-          <Text className="text-4xl">🚑</Text>
+          <Ambulance size={38} color="#101010" />
         </View>
         <Text className="text-ink font-black text-3xl tracking-tight">
           Trafficore

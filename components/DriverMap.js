@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Crosshair } from 'lucide-react-native';
 import { WebView } from 'react-native-webview';
 import { useDriverLocation } from '../hooks/useLocation';
 import { COLORS } from '../lib/theme';
@@ -141,7 +142,7 @@ export default function DriverMap({
       {!bare && <Text style={styles.credit}>© OpenStreetMap © CARTO</Text>}
       {fabVisible && (
         <TouchableOpacity style={styles.fab} onPress={centerOnMe}>
-          <Text style={styles.btnText}>◎</Text>
+          <Crosshair size={18} color="#101010" />
         </TouchableOpacity>
       )}
     </View>
@@ -185,8 +186,10 @@ const styles = StyleSheet.create({
     right: 16,
     backgroundColor: COLORS.primary,
     borderRadius: 24,
-    paddingVertical: 12,
-    paddingHorizontal: 18,
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   btn: {
     backgroundColor: COLORS.primary,

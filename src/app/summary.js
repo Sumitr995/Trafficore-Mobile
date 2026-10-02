@@ -1,4 +1,5 @@
 import { Text, TouchableOpacity, View } from 'react-native';
+import { Check } from 'lucide-react-native';
 import { Redirect, router } from 'expo-router';
 import { useTrip } from '../../lib/trip';
 
@@ -20,9 +21,9 @@ export default function SummaryScreen() {
     <View className="flex-1 bg-background px-5 justify-center gap-5">
       <View className="items-center gap-2">
         <View className="w-20 h-20 rounded-full bg-primary items-center justify-center">
-          <Text className="text-4xl">✓</Text>
+          <Check size={36} color="#101010" />
         </View>
-        <Text className="text-ink text-2xl font-black mt-2">Trip complete</Text>
+        <Text className="text-ink text-2xl font-black tracking-tight mt-2">TRIP COMPLETE</Text>
         <Text className="text-muted text-sm">
           {trip.id} • {trip.patient} — well done, driver.
         </Text>

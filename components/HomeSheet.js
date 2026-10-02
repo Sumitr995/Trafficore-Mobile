@@ -1,11 +1,16 @@
 import { Text, TouchableOpacity, View } from 'react-native';
+import { Hospital as HospitalIcon, X } from 'lucide-react-native';
 import EmergencyCard from './EmergencyCard';
 import HospitalSheet from './HospitalSheet';
+import Reveal from './Reveal';
 
 // Uber-style bottom sheet: one card per driver state, handle on top.
 export default function HomeSheet({ t }) {
   return (
-    <View className="absolute bottom-0 inset-x-0 bg-background border-t border-border rounded-t-[28px] px-5 pt-2.5 pb-6">
+    <Reveal
+      changeKey={t.status}
+      className="absolute bottom-0 inset-x-0 bg-background border-t border-border rounded-t-[28px] px-5 pt-2.5 pb-6"
+    >
       <View className="w-10 h-1 rounded-full bg-border self-center mb-3" />
 
       {t.status === 'offline' && (
@@ -79,12 +84,13 @@ export default function HomeSheet({ t }) {
           className="flex-row items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-2.5"
           onPress={() => t.setHospital(null)}
         >
+          <HospitalIcon size={14} color="#00d992" />
           <Text className="text-primary text-xs font-black flex-1" numberOfLines={1}>
-            🏥 {t.hospital.name}
+            {t.hospital.name}
           </Text>
-          <Text className="text-primary text-xs font-extrabold">Change ✕</Text>
+          <X size={14} color="#00d992" />
         </TouchableOpacity>
       )}
-    </View>
+    </Reveal>
   );
 }

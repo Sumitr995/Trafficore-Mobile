@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { CheckCircle2, Map as MapIcon, Play, Square } from 'lucide-react-native';
 import DriverMap from './DriverMap';
 import TripBanner from './TripBanner';
 import SignalPanel from './SignalPanel';
@@ -128,9 +129,9 @@ export default function NavigateCard({
         </View>
         <View className="absolute top-3 left-3 bg-background/95 border border-primary/40 px-4 py-2.5 rounded-full">
           {phase === 'ready' && route ? (
-            <Text className="text-primary font-black text-sm">
-              🟢 {formatKm(route.distanceM)} • ~{formatEta(route.durationS)}
-              {follow ? ' • following' : ''}
+            <Text className="text-primary font-black text-sm tracking-wide">
+              {formatKm(route.distanceM)} • ~{formatEta(route.durationS)}
+              {follow ? ' • LIVE' : ''}
             </Text>
           ) : phase === 'loading' ? (
             <Text className="text-muted text-xs font-bold">Finding route…</Text>
@@ -163,27 +164,34 @@ export default function NavigateCard({
           </>
         )}
         {arrived && (
-          <View className="rounded-2xl bg-primary/15 border border-primary/40 px-4 py-3">
-            <Text className="text-primary font-black text-[13px]">
-              ✅ ARRIVED (within 300 m) — {arrivedHint}
+          <View className="rounded-2xl bg-primary/15 border border-primary/40 px-4 py-3 flex-row items-center gap-2">
+            <CheckCircle2 size={15} color="#00d992" />
+            <Text className="text-primary font-black text-[13px] tracking-wide flex-1">
+              ARRIVED — {arrivedHint.toUpperCase()}
             </Text>
           </View>
         )}
         <View className="flex-row gap-3">
           <TouchableOpacity
-            className={`flex-1 h-14 rounded-full items-center justify-center ${follow ? 'bg-[#ff6b6b]' : 'bg-primary'}`}
+            className={`flex-1 h-14 rounded-full flex-row items-center justify-center gap-1.5 ${follow ? 'bg-[#ff6b6b]' : 'bg-primary'}`}
             onPress={() => setFollow((f) => !f)}
             activeOpacity={0.8}
           >
-            <Text className="font-black text-base" style={{ color: '#101010' }}>
-              {follow ? '■ Stop' : '▶ Start Trip'}
+            {follow ? (
+              <Square size={15} color="#101010" />
+            ) : (
+              <Play size={15} color="#101010" />
+            )}
+            <Text className="font-black text-base tracking-wide" style={{ color: '#101010' }}>
+              {follow ? 'STOP' : 'START TRIP'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="h-14 px-5 rounded-full border border-border items-center justify-center"
+            className="h-14 px-5 rounded-full border border-border flex-row items-center gap-1.5 justify-center"
             onPress={openGMaps}
           >
-            <Text className="text-ink font-extrabold">🗺️ Backup</Text>
+            <MapIcon size={15} color="#f2f2f2" />
+            <Text className="text-ink font-extrabold text-sm tracking-widest">MAPS</Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { RefreshCw, Siren } from 'lucide-react-native';
 import { fetchSignals } from '../lib/signals';
 import { formatDist } from '../lib/hospitals';
 import { triggerGreenCorridor, releaseCorridor } from '../lib/signalControl';
@@ -45,27 +46,34 @@ export default function SignalPanel({ origin, ambulanceId, onSignals }) {
 
   if (!sigs.length) return null;
   return (
-    <View className="bg-[#161616] border border-border rounded-3xl p-4 gap-2">
+    <View className="bg-[#161616] border border-border rounded-3xl p-4 gap-2.5">
       <View className="flex-row items-center gap-2">
-        <Text className="text-ink font-black text-sm flex-1">
-          🚦 Signals ahead ({sigs.length})
+        <Siren size={14} color="#00d992" />
+        <Text className="text-muted text-[11px] font-bold tracking-widest flex-1">
+          SIGNALS AHEAD — {sigs.length}
         </Text>
         {busy && <ActivityIndicator size="small" color="#00d992" />}
-        <TouchableOpacity onPress={load}>
-          <Text className="text-primary text-xs font-extrabold">↻</Text>
+        <TouchableOpacity
+          className="w-8 h-8 rounded-full border border-border items-center justify-center"
+          onPress={load}
+        >
+          <RefreshCw size={12} color="#f2f2f2" />
         </TouchableOpacity>
       </View>
       {sigs.slice(0, 3).map((s, i) => (
         <View key={s.id} className="flex-row items-center gap-2">
-          <Text className="text-muted text-xs flex-1">
-            #{i + 1} • {formatDist(s.distM)} ahead
+          <Text className="text-muted text-[11px] font-black tracking-widest w-7">
+            0{i + 1}
+          </Text>
+          <Text className="text-ink text-xs font-bold flex-1">
+            {formatDist(s.distM)} ahead
           </Text>
           <TouchableOpacity
             className={`px-4 py-2 rounded-full ${requested[s.id] ? 'bg-[#ff6b6b]' : 'bg-primary'}`}
             onPress={() => toggle(s)}
           >
-            <Text className="text-[11px] font-black" style={{ color: '#101010' }}>
-              {requested[s.id] ? 'Release' : 'Go Green'}
+            <Text className="text-[11px] font-black tracking-widest" style={{ color: '#101010' }}>
+              {requested[s.id] ? 'RELEASE' : 'GO GREEN'}
             </Text>
           </TouchableOpacity>
         </View>

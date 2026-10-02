@@ -11,6 +11,7 @@ import {
 import { useDriverLocation } from '../hooks/useLocation';
 import { useTrip } from '../lib/trip';
 import { fetchHospitals, formatDist } from '../lib/hospitals';
+import { fetchGeoapifyHospitals, mergeHospitals } from '../lib/placesGeoapify';
 import NameSearch from './NameSearch';
 import TopHospitals from './TopHospitals';
 
@@ -36,7 +37,11 @@ export default function HospitalSheet() {
     setError('');
     try {
       const { data, cached: hit } = await fetchHospitals(origin, { force });
-      setList(data);
+      // second pipe: Geoapify enriches/fills; never fails the search
+      const g = await fetchGeoapifyHospitals(origin, { force }).catch(() => ({
+        data: [],
+      }));
+      setList(mergeHospitals(data, g.data || []));
       setCached(hit);
       setPhase('ready');
     } catch (e) {
@@ -97,6 +102,10 @@ export default function HospitalSheet() {
           <Text className="text-primary text-xs font-extrabold">↻ Refresh</Text>
         </TouchableOpacity>
       </View>
+      {/* required credit for the free Geoapify tier */}
+      <Text className="text-muted text-[10px]">
+        Hospital data: © OpenStreetMap contributors • Powered by Geoapify
+      </Text>
 
       {/* automatic: type a name, tap, done — no coordinates typed */}
       <NameSearch origin={origin} onPick={(h) => setHospital(h)} />

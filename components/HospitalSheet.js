@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useDriverLocation } from '../hooks/useLocation';
 import { useTrip } from '../lib/trip';
-import { fetchHospitals, formatDist } from '../lib/hospitals';
+import { fetchHospitals, formatDist, loadLast } from '../lib/hospitals';
 import { fetchGeoapifyHospitals, mergeHospitals } from '../lib/placesGeoapify';
 import NameSearch from './NameSearch';
 import TopHospitals from './TopHospitals';
@@ -26,6 +26,7 @@ export default function HospitalSheet() {
   const [phase, setPhase] = useState('idle'); // idle|loading|ready|error
   const [list, setList] = useState([]);
   const [cached, setCached] = useState(false);
+  const [offline, setOffline] = useState(false);
   const [error, setError] = useState('');
   const [custom, setCustom] = useState('');
   const [customErr, setCustomErr] = useState('');
@@ -35,19 +36,29 @@ export default function HospitalSheet() {
     if (!origin) return;
     setPhase('loading');
     setError('');
-    try {
-      const { data, cached: hit } = await fetchHospitals(origin, { force });
-      // second pipe: Geoapify enriches/fills; never fails the search
-      const g = await fetchGeoapifyHospitals(origin, { force }).catch(() => ({
-        data: [],
-      }));
-      setList(mergeHospitals(data, g.data || []));
-      setCached(hit);
+    setOffline(false);
+    // sources are isolated: either one alone still shows results
+    const [o, g] = await Promise.all([
+      fetchHospitals(origin, { force }).catch((e) => ({ error: e })),
+      fetchGeoapifyHospitals(origin, { force }).catch(() => ({ data: [] })),
+    ]);
+    const merged = mergeHospitals(o.data || [], g.data || []);
+    if (merged.length) {
+      setList(merged);
+      setCached(!!o.cached);
       setPhase('ready');
-    } catch (e) {
-      setPhase('error');
-      setError(e.message || 'Search failed.');
+      return;
     }
+    // both failed/empty → last-known list with an honest tag
+    const last = await loadLast();
+    if (last) {
+      setList(last.data);
+      setOffline(true);
+      setPhase('ready');
+      return;
+    }
+    setPhase('error');
+    setError(o.error?.message || 'Search failed.');
   }
 
   useEffect(() => {
@@ -106,6 +117,13 @@ export default function HospitalSheet() {
       <Text className="text-muted text-[10px]">
         Hospital data: © OpenStreetMap contributors • Powered by Geoapify
       </Text>
+      {offline && (
+        <View className="rounded-2xl border border-[#ff6b6b]/40 bg-[#ff6b6b]/10 px-4 py-2.5">
+          <Text className="text-[#ff6b6b] text-xs font-bold">
+            📴 Offline — showing last known list. Distances are stale.
+          </Text>
+        </View>
+      )}
 
       {!origin && (
         <View className="rounded-2xl border border-[#ff6b6b]/40 bg-[#ff6b6b]/10 px-4 py-3">

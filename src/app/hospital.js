@@ -5,6 +5,7 @@ import {
   Zap, ChevronRight, ChevronLeft, Video, Navigation, Radio, Check,
 } from 'lucide-react-native';
 import { CONTENT_BOX } from '../../lib/theme';
+import { KEYS } from '../../lib/keys';
 import CamFeed from '../../components/CamFeed';
 import ChatPanel from '../../components/ChatPanel';
 import {
@@ -118,7 +119,7 @@ export default function Hospital() {
                     AMBULANCE CAMERA FEED
                   </Text>
                 </View>
-                <CamFeed cams={camRooms[amb.id]} title="PATIENT BAY" style={{ maxWidth: 420 }} />
+                <CamFeed cams={camRooms[amb.id]} stream={KEYS.camUrl} title="PATIENT BAY" style={{ maxWidth: 420 }} />
               </View>
             </View>
 

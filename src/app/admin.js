@@ -5,6 +5,7 @@ import {
   Video, ShieldCheck, ShieldX, Clock3, TrafficCone,
 } from 'lucide-react-native';
 import { CONTENT_BOX } from '../../lib/theme';
+import { KEYS } from '../../lib/keys';
 import CorridorMap from '../../components/CorridorMap';
 import CamFeed from '../../components/CamFeed';
 import {
@@ -167,7 +168,7 @@ export default function Admin() {
                     AMBULANCE CAMERA
                   </Text>
                 </View>
-                <CamFeed cams={camRooms[amb.id]} style={{ maxWidth: 420 }} />
+                <CamFeed cams={camRooms[amb.id]} stream={KEYS.camUrl} style={{ maxWidth: 420 }} />
               </View>
             </View>
           </View>

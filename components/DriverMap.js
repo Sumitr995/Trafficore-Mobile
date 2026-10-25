@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Crosshair } from 'lucide-react-native';
 import { WebView } from 'react-native-webview';
 import { useDriverLocation } from '../hooks/useLocation';
@@ -28,6 +28,7 @@ window.setDest=function(la,lo,label){if(destMark){map.removeLayer(destMark);}des
 window.setRoute=function(pts){if(routeLine){map.removeLayer(routeLine);}routeLine=L.polyline(pts,{color:'#06c167',weight:5,opacity:0.95}).addTo(map);map.fitBounds(routeLine.getBounds().pad(0.3));};
 var sigLayer=null;
 window.setSignals=function(pts){if(sigLayer){map.removeLayer(sigLayer);}sigLayer=L.layerGroup(pts.map(function(p){return L.marker([p[0],p[1]],{icon:L.divIcon({className:'',html:'<div class="sig">🚦</div>',iconSize:[22,22],iconAnchor:[11,11]}),interactive:false});})).addTo(map);};
+window.addEventListener('message',function(e){try{eval(e.data)}catch(_){}});
 </script></body></html>`;
 }
 
@@ -46,7 +47,16 @@ export default function DriverMap({
 }) {
   const { location, status, errorMsg, retry } = useDriverLocation();
   const webRef = useRef(null);
+  const iframeRef = useRef(null);
   const [ready, setReady] = useState(false);
+
+  // One update path for both target: same JS string via injectJavaScript
+  // (native WebView) or postMessage (web iframe listener above).
+  function run(js) {
+    if (!ready) return;
+    if (Platform.OS === 'web') iframeRef.current?.contentWindow?.postMessage(js, '*');
+    else webRef.current?.injectJavaScript(`${js};true;`);
+  }
 
   const coords = location?.coords
     ? { latitude: location.coords.latitude, longitude: location.coords.longitude }
@@ -64,42 +74,36 @@ export default function DriverMap({
 
   // Live GPS → marker (+ pan when following)
   useEffect(() => {
-    if (coords && ready && webRef.current) {
-      webRef.current.injectJavaScript(
-        `window.updatePos(${coords.latitude},${coords.longitude},${follow ? 1 : 0});true;`
-      );
+    if (coords) {
+      run(`window.updatePos(${coords.latitude},${coords.longitude},${follow ? 1 : 0})`);
     }
   }, [coords?.latitude, coords?.longitude, ready, follow]);
 
   // Destination pin
   useEffect(() => {
-    if (destination && ready && webRef.current) {
-      webRef.current.injectJavaScript(
-        `window.setDest(${destination.latitude},${destination.longitude},'${destination.label || 'PICKUP'}');true;`
+    if (destination) {
+      run(
+        `window.setDest(${destination.latitude},${destination.longitude},'${destination.label || 'PICKUP'}')`
       );
     }
   }, [destination?.latitude, destination?.longitude, ready]);
 
   // Green route polyline
   useEffect(() => {
-    if (routePoints?.length && ready && webRef.current) {
-      webRef.current.injectJavaScript(
-        `window.setRoute(${JSON.stringify(routePoints)});true;`
-      );
+    if (routePoints?.length) {
+      run(`window.setRoute(${JSON.stringify(routePoints)})`);
     }
   }, [ready, routePoints?.length]);
 
   // Real traffic-signal pins (🚦), pushed once per fetch
   useEffect(() => {
-    if (signals?.length && ready && webRef.current) {
-      webRef.current.injectJavaScript(
-        `window.setSignals(${JSON.stringify(signals)});true;`
-      );
+    if (signals?.length) {
+      run(`window.setSignals(${JSON.stringify(signals)})`);
     }
   }, [ready, signals?.length]);
 
   function centerOnMe() {
-    webRef.current?.injectJavaScript(`window.recenter();true;`);
+    run(`window.recenter()`);
   }
 
   const fabVisible = showFab ?? !bare;
@@ -124,12 +128,22 @@ export default function DriverMap({
 
   return (
     <View style={[styles.container, compact && !bare && styles.compactBox]}>
-      <WebView
-        ref={webRef}
-        style={styles.map}
-        source={{ html }}
-        onLoadEnd={() => setReady(true)}
-      />
+      {Platform.OS === 'web' ? (
+        <iframe
+          ref={iframeRef}
+          srcDoc={html}
+          onLoad={() => setReady(true)}
+          style={{ border: 0, width: '100%', height: '100%', backgroundColor: COLORS.background }}
+          title="Trafficore map"
+        />
+      ) : (
+        <WebView
+          ref={webRef}
+          style={styles.map}
+          source={{ html }}
+          onLoadEnd={() => setReady(true)}
+        />
+      )}
       {!compact && (
         <View style={styles.banner}>
           <Text style={styles.title}>TRAFFICORE DRIVER • OSM</Text>

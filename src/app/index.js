@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { History, LogOut } from 'lucide-react-native';
+import { History, LogOut, Siren } from 'lucide-react-native';
 import { Redirect, router } from 'expo-router';
 import { useAuth } from '../../lib/auth';
 import { useTrip } from '../../lib/trip';
@@ -77,6 +77,12 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
+        <TouchableOpacity
+          className="w-[52px] h-[52px] bg-background/95 border border-border rounded-full items-center justify-center ml-2"
+          onPress={() => router.push('/signal')}
+        >
+          <Siren size={16} color="#141414" />
+        </TouchableOpacity>
         <TouchableOpacity
           className="w-[52px] h-[52px] bg-background/95 border border-border rounded-full items-center justify-center ml-2"
           onPress={() => router.push('/history')}

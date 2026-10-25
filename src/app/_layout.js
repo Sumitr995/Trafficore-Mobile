@@ -22,6 +22,8 @@ export default function RootLayout() {
           <Stack.Screen name="admin" options={{ title: 'Admin' }} />
           <Stack.Screen name="hospital" options={{ title: 'Hospital' }} />
           <Stack.Screen name="history" options={{ title: 'Trip History' }} />
+          <Stack.Screen name="signal" options={{ headerShown: false }} />
+          <Stack.Screen name="patient" options={{ headerShown: false }} />
           <Stack.Screen name="summary" options={{ title: 'Trip Summary' }} />
         </Stack>
       </TripProvider>

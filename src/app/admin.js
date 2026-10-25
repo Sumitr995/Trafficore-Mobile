@@ -1,13 +1,22 @@
-import { useState } from 'react';
-import { ScrollView, View, Text, Pressable } from 'react-native';
+import { useState } from 'react';import { ScrollView, View, Text, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { LayoutDashboard, Building2, Ambulance, ChevronRight } from 'lucide-react-native';
+import {
+  LayoutDashboard, Building2, Ambulance, ChevronRight, Radio,
+  Video, ShieldCheck, ShieldX, Clock3, TrafficCone,
+} from 'lucide-react-native';
 import { CONTENT_BOX } from '../../lib/theme';
+import CorridorMap from '../../components/CorridorMap';
+import CamFeed from '../../components/CamFeed';
+import {
+  ambulances, corridorSignals, hospitals, accessList, camRooms, signalLog,
+} from '../../lib/dummy';
 
 const navItems = [
+  { id: 'corridor', label: 'Corridor Map', Icon: Radio },
   { id: 'overview', label: 'Overview', Icon: LayoutDashboard },
   { id: 'incidents', label: 'Incidents', Icon: Ambulance },
-  { id: 'users', label: 'Users & Roles', Icon: Building2 },
+  { id: 'access', label: 'Driver Access', Icon: ShieldCheck },
+  { id: 'users', label: 'Users', Icon: Building2 },
 ];
 
 const stats = [
@@ -45,14 +54,22 @@ const statusDot = {
 };
 
 export default function Admin() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('corridor');
+  const [selected, setSelected] = useState('AMB-07');
+  const [access, setAccess] = useState(accessList);
+
+  const amb = ambulances.find((a) => a.id === selected) || ambulances[0];
 
   return (
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ padding: 20, ...CONTENT_BOX }}>
-      <View className="mb-6">
+      <View className="mb-6 flex-row items-center justify-between">
         <Text className="text-[10px] tracking-[2px] text-muted font-semibold">ADMIN CONSOLE</Text>
+        <Pressable onPress={() => router.push('/hospital')} className="flex-row items-center gap-1">
+          <Text className="text-[10px] tracking-[1.5px] text-muted font-semibold">HOSPITAL CONSOLE</Text>
+          <ChevronRight size={12} color="#6b7280" />
+        </Pressable>
       </View>
-      <View className="flex-row gap-2 mb-8">
+      <View className="flex-row flex-wrap gap-2 mb-8">
         {navItems.map(({ id, label, Icon }) => (
           <Pressable
             key={id}
@@ -69,6 +86,94 @@ export default function Admin() {
         ))}
       </View>
 
+      {/* ── CORRIDOR MAP ─────────────────────────────────────────── */}
+      {activeTab === 'corridor' && (
+        <View>
+          <Text className="text-[11px] tracking-[1.5px] text-muted font-semibold mb-2">
+            LIVE CORRIDOR — BENGALURU · TAP AN AMBULANCE
+          </Text>
+          <View className="flex-row flex-wrap gap-4">
+            <View style={{ grow: 1, minWidth: '58%' }}>
+              <CorridorMap
+                ambulances={ambulances}
+                signals={corridorSignals}
+                hospital={hospitals.M1}
+                patient={amb?.position}
+                selected={selected}
+                onSelect={(e) => { if (e.trfx === 'amb') setSelected(e.id); }}
+                height={420}
+              />
+              {/* Traffic-signal corridor strips (ambulance signal info) */}
+              <View className="rounded-xl border border-border p-4 mt-4">
+                <Text className="text-[13px] font-semibold text-ink mb-3">CORRIDOR SIGNALS</Text>
+                {corridorSignals.map((s) => {
+                  const col = s.state === 'green' ? '#06c167' : s.state === 'amber' ? '#f5a623' : '#ff3b30';
+                  return (
+                    <View key={s.id} className="flex-row items-center justify-between py-2.5 border-t border-border">
+                      <View className="flex-row items-center gap-2.5 flex-1">
+                        <View className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: col }} />
+                        <View className="flex-1">
+                          <Text className="text-[13px] font-medium text-ink">{s.name}</Text>
+                          <Text className="text-[11px] text-muted">{s.id} · phase {s.state.toUpperCase()}</Text>
+                        </View>
+                      </View>
+                      <View className={`px-2.5 py-1 rounded-full border ${
+                        amb?.grant === 'granted' ? 'border-[#c9e8d6] bg-[#eefbf2]' : 'border-border bg-[#f6f6f6]'
+                      }`}>
+                        <Text className={`text-[10px] font-bold ${
+                          amb?.grant === 'granted' ? 'text-accent' : 'text-muted'
+                        }`}>
+                          {amb?.grant === 'granted' ? 'PRIORITY ON HOLD' : s.state.toUpperCase()}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Right rail: selected ambulance — patient + camera */}
+            <View style={{ grow: 1, minWidth: 280 }} className="gap-4">
+              <View className="rounded-xl border border-border p-4">
+                <View className="flex-row items-center justify-between mb-3">
+                  <Text className="text-[13px] font-semibold text-ink">PATIENT DETAILS</Text>
+                  <Text className="text-[10px] font-bold tracking-wider text-muted bg-[#f6f6f6] px-2 py-0.5 rounded">
+                    {amb.id} · {amb.status.toUpperCase()}
+                  </Text>
+                </View>
+                <View className="flex-row items-center gap-3 mb-2">
+                  <View className="w-11 h-11 rounded-full bg-primary items-center justify-center">
+                    <Text className="text-white font-black">{amb.patient.name[0]}</Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-[15px] font-bold text-ink">{amb.patient.name}</Text>
+                    <Text className="text-[12px] text-muted">
+                      {amb.patient.gender === 'M' ? 'Male' : 'Female'}, {amb.patient.age} · SEV {amb.patient.severity.toUpperCase()}
+                    </Text>
+                  </View>
+                  <View className={`w-2 h-2 rounded-full ${dot[amb.patient.severity]}`} />
+                </View>
+                <DetailRow label="CONDITION" value={amb.patient.condition} />
+                <DetailRow label="PICKUP" value={amb.patient.pickup} />
+                <DetailRow label="CONTACT" value={amb.patient.contact} />
+                <DetailRow label="ETA TO HOSPITAL" value={amb.eta} />
+                <DetailRow label="NOTES" value={amb.patient.notes} />
+              </View>
+
+              <View>
+                <View className="flex-row items-center gap-2 mb-2">
+                  <Video size={13} color="#ff3b30" />
+                  <Text className="text-[11px] tracking-[1.5px] text-muted font-semibold">
+                    AMBULANCE CAMERA
+                  </Text>
+                </View>
+                <CamFeed cams={camRooms[amb.id]} style={{ maxWidth: 420 }} />
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
+
       {activeTab === 'overview' && (
         <View>
           <View className="flex-row flex-wrap gap-3">
@@ -82,7 +187,6 @@ export default function Admin() {
               </View>
             ))}
           </View>
-
           <View className="rounded-xl border border-border p-4 mt-6">
             <View className="flex-row items-center justify-between mb-4">
               <Text className="text-[13px] font-semibold text-ink">RECENT INCIDENTS</Text>
@@ -104,9 +208,72 @@ export default function Admin() {
         </View>
       )}
 
+      {/* ── DRIVER ACCESS CONTROL ────────────────────────────────── */}
+      {activeTab === 'access' && (
+        <View>
+          <Text className="text-[11px] tracking-[1.5px] text-muted font-semibold mb-3">
+            SIGNAL ACCESS CONTROL (DEMO)
+          </Text>
+          <View className="rounded-xl border border-border p-4 mb-4">
+            <Text className="text-[13px] font-semibold text-ink mb-3">REGISTERED DRIVERS</Text>
+            {access.map((d) => {
+              const granted = d.signal === 'granted';
+              return (
+                <View key={d.id} className="flex-row items-center justify-between py-3 border-b border-border">
+                  <View className="flex-1 pr-3">
+                    <View className="flex-row items-center gap-2">
+                      <Text className="text-[13px] font-bold text-ink">{d.id}</Text>
+                      <Text className="text-[11px] text-muted">· {d.driver}</Text>
+                      <Text className="text-[10px] text-muted bg-[#f6f6f6] px-1.5 py-0.5 rounded">{d.platform.toUpperCase()}</Text>
+                    </View>
+                    <Text className="text-[11px] text-muted mt-0.5">
+                      {granted ? 'Corridor priority granted' : d.signal === 'requested' ? 'Pending request' : 'No signal access'}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setAccess((l) => l.map((x) => x.id === d.id ? { ...x, signal: granted ? 'none' : 'granted' } : x))}
+                    className={`flex-row items-center gap-1.5 rounded-full px-3 py-2 border ${
+                      granted ? 'border-[#c9e8d6] bg-[#eefbf2]' : 'border-border bg-[#f6f6f6]'
+                    }`}
+                  >
+                    {granted ? <ShieldCheck size={13} color="#06c167" /> : <ShieldX size={13} color="#6b7280" />}
+                    <Text className={`text-[10px] font-black tracking-wider ${granted ? 'text-accent' : 'text-muted'}`}>
+                      {granted ? 'GRANTED' : 'GRANT'}
+                    </Text>
+                  </Pressable>
+                </View>
+              );
+            })}
+          </View>
+          <View className="rounded-xl border border-border p-4 mb-4">
+            <Text className="text-[13px] font-semibold text-ink mb-3">GRANT LOG</Text>
+            {signalLog.map((l) => (
+              <View key={l.id} className="flex-row items-center gap-2.5 py-2.5 border-t border-border">
+                <Clock3 size={13} color="#6b7280" />
+                <Text className="text-[11px] font-mono text-muted">{l.at}</Text>
+                <Text className="text-[12px] font-bold text-ink">{l.amb}</Text>
+                <Text className="text-[12px] text-ink flex-1">{l.signal}</Text>
+                <Text className={`text-[10px] font-black px-2 py-0.5 rounded ${
+                  l.act === 'GRANTED' ? 'text-accent bg-[#eefbf2]' : 'text-[#f5a623] bg-[#fff8e6]'
+                }`}>{l.act}</Text>
+              </View>
+            ))}
+          </View>
+          <View className="rounded-xl border border-border bg-[#f6f6f6] p-4">
+            <View className="flex-row items-center gap-2 mb-2">
+              <TrafficCone size={14} color="#6b7280" />
+              <Text className="text-sm font-semibold text-ink">HOW SIGNAL ACCESS WORKS</Text>
+            </View>
+            <Text className="text-xs text-muted leading-5">
+              driver requests → admin can grant → corridor signals flip to green hold while the ambulance passes → auto-release after crossing.
+            </Text>
+          </View>
+        </View>
+      )}
+
       {activeTab === 'users' && (
         <View>
-          <Text className="text-3xl font-bold tracking-tight text-ink mb-6">Users & Role Management</Text>
+          <Text className="text-3xl font-bold tracking-tight text-ink mb-6">Users &amp; Role Management</Text>
           <View className="rounded-xl border border-border p-4 mb-4">
             <Text className="text-[13px] font-semibold text-ink mb-4">REGISTERED USERS</Text>
             {users.map((u, i) => (
@@ -153,11 +320,20 @@ export default function Admin() {
   );
 }
 
+function DetailRow({ label, value }) {
+  return (
+    <View className="py-2 border-t border-border mt-1.5">
+      <Text className="text-[10px] tracking-[1.5px] text-muted font-semibold mb-0.5">{label}</Text>
+      <Text className="text-[13px] text-ink leading-4">{value}</Text>
+    </View>
+  );
+}
+
 function IncidentList({ rows }) {
   return (
     <View>
-      {rows.map((inc, k) => (
-        <View key={inc.id} className={`py-3.5 ${k > 0 ? 'border-t border-border' : ''}`}>
+      {rows.map((inc) => (
+        <View key={inc.id} className="py-3.5 border-t border-border">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <Text className="text-[11px] px-2 py-0.5 rounded font-mono font-medium text-muted bg-[#f6f6f6]">

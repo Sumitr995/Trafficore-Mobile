@@ -67,7 +67,7 @@ export default function HospitalSheet() {
   return (
     <View className="gap-3">
       <View className="flex-row items-center gap-2">
-        <HospitalIcon size={15} color="#00d992" />
+        <HospitalIcon size={15} color="#06c167" />
         <Text className="text-muted text-[11px] font-bold tracking-widest flex-1">
           NEARBY HOSPITALS{cached ? ' • CACHED' : ''}
         </Text>
@@ -75,7 +75,7 @@ export default function HospitalSheet() {
           className="w-9 h-9 rounded-full border border-border items-center justify-center"
           onPress={() => load(true)}
         >
-          <RefreshCw size={14} color="#f2f2f2" />
+          <RefreshCw size={14} color="#141414" />
         </TouchableOpacity>
       </View>
 
@@ -99,7 +99,7 @@ export default function HospitalSheet() {
 
       {phase === 'loading' && (
         <View className="flex-row items-center gap-2 py-4 justify-center">
-          <ActivityIndicator color="#00d992" />
+          <ActivityIndicator color="#06c167" />
           <Text className="text-muted text-xs">Searching around you…</Text>
         </View>
       )}
@@ -113,7 +113,7 @@ export default function HospitalSheet() {
             className="h-12 rounded-full bg-primary items-center justify-center"
             onPress={() => load(true)}
           >
-            <Text className="font-black" style={{ color: '#101010' }}>
+            <Text className="font-black" style={{ color: '#ffffff' }}>
               Retry
             </Text>
           </TouchableOpacity>
@@ -121,8 +121,8 @@ export default function HospitalSheet() {
       )}
 
       {phase === 'ready' && list.length === 0 && (
-        <View className="rounded-2xl bg-[#161616] border border-border px-4 py-5 items-center gap-1">
-          <HospitalIcon size={28} color="#8b949e" />
+        <View className="rounded-2xl bg-[#f6f6f6] border border-border px-4 py-5 items-center gap-1">
+          <HospitalIcon size={28} color="#6b7280" />
           <Text className="text-ink font-extrabold">None mapped nearby</Text>
           <Text className="text-muted text-xs text-center">
             No hospitals within 8 km in OSM.

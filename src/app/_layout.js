@@ -8,16 +8,17 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <TripProvider>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <Stack
           screenOptions={{
-            headerStyle: { backgroundColor: '#101010' },
-            headerTintColor: '#f2f2f2',
-            contentStyle: { backgroundColor: '#101010' },
+            headerStyle: { backgroundColor: '#ffffff' },
+            headerTintColor: '#141414',
+            contentStyle: { backgroundColor: '#ffffff' },
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="history" options={{ title: 'Trip History' }} />
           <Stack.Screen name="summary" options={{ title: 'Trip Summary' }} />
         </Stack>
       </TripProvider>

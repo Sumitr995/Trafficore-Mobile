@@ -26,7 +26,7 @@ export default function HomeSheet({ t }) {
           >
             <Text
               className="font-black text-lg tracking-wide"
-              style={{ color: '#101010' }}
+              style={{ color: '#ffffff' }}
             >
               GO ONLINE
             </Text>
@@ -37,7 +37,7 @@ export default function HomeSheet({ t }) {
       {t.status === 'idle' && (
         <View className="gap-3">
           <View className="flex-row items-center gap-2">
-            <View className="w-2.5 h-2.5 rounded-full bg-primary" />
+            <View className="w-2.5 h-2.5 rounded-full bg-accent" />
             <Text className="text-ink font-black text-base flex-1">
               You're online
             </Text>
@@ -47,24 +47,25 @@ export default function HomeSheet({ t }) {
               </Text>
             </TouchableOpacity>
           </View>
-          <View className="flex-row gap-2.5">
-            {[
-              ['12', 'Rescues'],
-              ['86 km', 'Today'],
-              ['6.5 h', 'Duty'],
-            ].map(([n, l]) => (
-              <View
-                key={l}
-                className="flex-1 bg-[#161616] border border-border rounded-2xl py-3 items-center"
-              >
-                <Text className="text-ink font-black text-base">{n}</Text>
-                <Text className="text-muted text-[11px] font-bold">{l}</Text>
-              </View>
-            ))}
-          </View>
-          <Text className="text-primary text-xs font-bold text-center">
-            Waiting for emergency dispatch…
-          </Text>
+          {/* Driver self-starts a trip: pick up a case, or patient already onboard */}
+          <TouchableOpacity
+            className="h-14 rounded-full bg-primary items-center justify-center"
+            onPress={t.takeCase}
+            activeOpacity={0.85}
+          >
+            <Text className="text-[#ffffff] font-black text-base tracking-wide">
+              TAKE A CASE
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="h-14 rounded-full border border-primary/40 bg-primary/10 items-center justify-center"
+            onPress={t.startTransport}
+            activeOpacity={0.85}
+          >
+            <Text className="text-primary font-black text-base tracking-wide">
+              PATIENT ONBOARD — TRANSPORT NOW
+            </Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -84,11 +85,11 @@ export default function HomeSheet({ t }) {
           className="flex-row items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-2.5"
           onPress={() => t.setHospital(null)}
         >
-          <HospitalIcon size={14} color="#00d992" />
+          <HospitalIcon size={14} color="#06c167" />
           <Text className="text-primary text-xs font-black flex-1" numberOfLines={1}>
             {t.hospital.name}
           </Text>
-          <X size={14} color="#00d992" />
+          <X size={14} color="#06c167" />
         </TouchableOpacity>
       )}
     </Reveal>

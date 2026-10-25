@@ -1,7 +1,10 @@
+import { useEffect } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { History, LogOut } from 'lucide-react-native';
 import { Redirect, router } from 'expo-router';
 import { useAuth } from '../../lib/auth';
 import { useTrip } from '../../lib/trip';
+import { useDriverLocation } from '../../hooks/useLocation';
 import DriverMap from '../../components/DriverMap';
 import NavigateCard from '../../components/NavigateCard';
 import HomeSheet from '../../components/HomeSheet';
@@ -10,6 +13,13 @@ import HomeSheet from '../../components/HomeSheet';
 export default function HomeScreen() {
   const { user, loading, signOut } = useAuth();
   const t = useTrip();
+  const { location } = useDriverLocation();
+
+  // Trip telemetry: publish GPS to the broker while a leg is live.
+  useEffect(() => {
+    if (location?.coords) t.publishPosition(location.coords);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location?.latitude, location?.longitude]);
 
   if (loading) {
     return (
@@ -45,26 +55,39 @@ export default function HomeScreen() {
         )}
       </View>
 
-      {/* TOP FLOATING BAR */}
-      <View className="absolute top-14 inset-x-4 flex-row items-center gap-2">
-        <View
-          className={`flex-row items-center gap-1.5 px-3.5 py-2 rounded-full border ${t.online ? 'bg-background/95 border-primary/50' : 'bg-background/95 border-border'}`}
-        >
-          <View
-            className={`w-2 h-2 rounded-full ${t.online ? 'bg-primary' : 'bg-muted'}`}
-          />
-          <Text
-            className={`text-[11px] font-black tracking-widest ${t.online ? 'text-primary' : 'text-muted'}`}
-          >
-            {t.online ? 'ONLINE' : 'OFFLINE'}
-          </Text>
+      {/* TOP FLOATING CAPSULE — Uber driver style: avatar + status + logout */}
+      <View className="absolute top-14 inset-x-4 flex-row items-center">
+        <View className="flex-1 flex-row items-center gap-3 bg-background/95 border border-border rounded-full py-2 pl-2.5 pr-4">
+          <View className="w-10 h-10 rounded-full bg-primary items-center justify-center">
+            <Text className="font-black text-lg" style={{ color: '#ffffff' }}>
+              D
+            </Text>
+          </View>
+          <View className="flex-1">
+            <Text className="text-ink font-extrabold text-sm">Ambulance Driver</Text>
+            <View className="flex-row items-center gap-1.5">
+              <View
+                className={`w-1.5 h-1.5 rounded-full ${t.online ? 'bg-accent' : 'bg-muted'}`}
+              />
+              <Text
+                className={`text-[11px] font-extrabold ${t.online ? 'text-primary' : 'text-muted'}`}
+              >
+                {t.online ? 'ONLINE' : 'OFFLINE'}
+              </Text>
+            </View>
+          </View>
         </View>
-        <View className="flex-1" />
         <TouchableOpacity
-          className="bg-background/95 border border-border px-3.5 py-2 rounded-full"
+          className="w-[52px] h-[52px] bg-background/95 border border-border rounded-full items-center justify-center ml-2"
+          onPress={() => router.push('/history')}
+        >
+          <History size={16} color="#141414" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="w-[52px] h-[52px] bg-background/95 border border-border rounded-full items-center justify-center ml-2"
           onPress={signOut}
         >
-          <Text className="text-ink text-[11px] font-extrabold">Logout</Text>
+          <LogOut size={16} color="#141414" />
         </TouchableOpacity>
       </View>
 

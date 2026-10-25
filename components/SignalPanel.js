@@ -46,18 +46,18 @@ export default function SignalPanel({ origin, ambulanceId, onSignals }) {
 
   if (!sigs.length) return null;
   return (
-    <View className="bg-[#161616] border border-border rounded-3xl p-4 gap-2.5">
+    <View className="bg-[#f6f6f6] border border-border rounded-3xl p-4 gap-2.5">
       <View className="flex-row items-center gap-2">
-        <Siren size={14} color="#00d992" />
+        <Siren size={14} color="#06c167" />
         <Text className="text-muted text-[11px] font-bold tracking-widest flex-1">
           SIGNALS AHEAD — {sigs.length}
         </Text>
-        {busy && <ActivityIndicator size="small" color="#00d992" />}
+        {busy && <ActivityIndicator size="small" color="#06c167" />}
         <TouchableOpacity
           className="w-8 h-8 rounded-full border border-border items-center justify-center"
           onPress={load}
         >
-          <RefreshCw size={12} color="#f2f2f2" />
+          <RefreshCw size={12} color="#141414" />
         </TouchableOpacity>
       </View>
       {sigs.slice(0, 3).map((s, i) => (
@@ -72,7 +72,7 @@ export default function SignalPanel({ origin, ambulanceId, onSignals }) {
             className={`px-4 py-2 rounded-full ${requested[s.id] ? 'bg-[#ff6b6b]' : 'bg-primary'}`}
             onPress={() => toggle(s)}
           >
-            <Text className="text-[11px] font-black tracking-widest" style={{ color: '#101010' }}>
+            <Text className="text-[11px] font-black tracking-widest" style={{ color: '#ffffff' }}>
               {requested[s.id] ? 'RELEASE' : 'GO GREEN'}
             </Text>
           </TouchableOpacity>

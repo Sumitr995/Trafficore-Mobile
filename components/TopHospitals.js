@@ -93,12 +93,12 @@ export default function TopHospitals({ candidates, severity, onNavigate }) {
         <Text className="text-muted text-[11px] font-bold tracking-widest flex-1">
           NEARBY HOSPITALS
         </Text>
-        <Timer size={12} color="#8b949e" />
+        <Timer size={12} color="#6b7280" />
         <Text className="text-primary text-[11px] font-black">
           {left}s AUTO
         </Text>
       </View>
-      <View className="h-1 rounded-full bg-[#1f1f1f] overflow-hidden">
+      <View className="h-1 rounded-full bg-[#f0f0f0] overflow-hidden">
         <View
           className="h-1 rounded-full bg-primary"
           style={{ width: `${(left / AUTO_SEC) * 100}%` }}
@@ -113,7 +113,7 @@ export default function TopHospitals({ candidates, severity, onNavigate }) {
         ranked.map((h, i) => (
           <View
             key={h.id}
-            className={`rounded-2xl px-4 py-3.5 gap-2.5 border ${i === 0 ? 'bg-[#161616] border-primary' : 'bg-[#161616] border-border'}`}
+            className={`rounded-2xl px-4 py-3.5 gap-2.5 border ${i === 0 ? 'bg-[#f6f6f6] border-primary' : 'bg-[#f6f6f6] border-border'}`}
           >
             <View className="flex-row items-center gap-2.5">
               <Text className="text-muted text-[11px] font-black tracking-widest w-6">
@@ -137,8 +137,8 @@ export default function TopHospitals({ candidates, severity, onNavigate }) {
                 onPress={() => choose(h)}
                 activeOpacity={0.8}
               >
-                <Navigation size={15} color="#101010" />
-                <Text className="font-black text-sm" style={{ color: '#101010' }}>
+                <Navigation size={15} color="#ffffff" />
+                <Text className="font-black text-sm" style={{ color: '#ffffff' }}>
                   Route
                 </Text>
               </TouchableOpacity>
@@ -150,7 +150,7 @@ export default function TopHospitals({ candidates, severity, onNavigate }) {
                   )
                 }
               >
-                <MapPin size={14} color="#f2f2f2" />
+                <MapPin size={14} color="#141414" />
                 <Text className="text-ink text-xs font-extrabold">Maps</Text>
               </TouchableOpacity>
             </View>
@@ -159,21 +159,21 @@ export default function TopHospitals({ candidates, severity, onNavigate }) {
       )}
 
       {/* search across the nearest 10 */}
-      <View className="flex-row items-center gap-2 h-12 rounded-full bg-[#1f1f1f] border border-border px-4">
-        <Search size={15} color="#8b949e" />
+      <View className="flex-row items-center gap-2 h-12 rounded-full bg-[#f0f0f0] border border-border px-4">
+        <Search size={15} color="#6b7280" />
         <TextInput
           className="flex-1 text-ink text-sm h-12"
           value={query}
           onChangeText={setQuery}
           placeholder="Search hospital name…"
-          placeholderTextColor="#8b949e"
+          placeholderTextColor="#6b7280"
           autoCorrect={false}
         />
       </View>
       {matches.map((h) => (
         <TouchableOpacity
           key={h.id}
-          className="flex-row items-center gap-2 px-4 py-3 rounded-2xl bg-[#1f1f1f] border border-border"
+          className="flex-row items-center gap-2 px-4 py-3 rounded-2xl bg-[#f0f0f0] border border-border"
           onPress={() => choose(h)}
         >
           <Text className="text-ink text-sm font-bold flex-1" numberOfLines={1}>

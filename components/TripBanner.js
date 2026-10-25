@@ -18,9 +18,9 @@ export default function TripBanner({ status, trip, onPickedUp, onArrived }) {
   if (!trip) return null;
   const idx = stepIndex(status);
   return (
-    <View className="bg-[#161616] border border-border rounded-3xl p-5 gap-4">
+    <View className="bg-[#f6f6f6] border border-border rounded-3xl p-5 gap-4">
       <View className="flex-row items-center justify-between">
-        <Text className="text-primary text-[11px] font-black tracking-widest">
+        <Text className="text-accent text-[11px] font-black tracking-widest">
           {status === 'accepted' ? '● EN ROUTE — PATIENT' : '● EN ROUTE — HOSPITAL'}
         </Text>
         <Text className="text-muted text-[11px] font-bold">{trip.id}</Text>
@@ -28,7 +28,7 @@ export default function TripBanner({ status, trip, onPickedUp, onArrived }) {
 
       <View className="flex-row items-center gap-3">
         <View className="w-12 h-12 rounded-full bg-primary items-center justify-center">
-          <Text className="font-black text-xl" style={{ color: '#101010' }}>
+          <Text className="font-black text-xl" style={{ color: '#ffffff' }}>
             {trip.patient.charAt(0)}
           </Text>
         </View>
@@ -48,10 +48,10 @@ export default function TripBanner({ status, trip, onPickedUp, onArrived }) {
             <View key={s.key} className="flex-row gap-3">
               <View className="items-center">
                 <View
-                  className={`w-4 h-4 rounded-full border-2 ${done ? 'bg-primary border-primary' : 'border-border'}`}
+                  className={`w-4 h-4 rounded-full border-2 ${done ? 'bg-accent border-accent' : 'border-border'}`}
                 />
                 {!last && (
-                  <View className={`w-[2px] h-5 ${i < idx ? 'bg-primary' : 'bg-border'}`} />
+                  <View className={`w-[2px] h-5 ${i < idx ? 'bg-accent' : 'bg-border'}`} />
                 )}
               </View>
               <Text
@@ -70,8 +70,8 @@ export default function TripBanner({ status, trip, onPickedUp, onArrived }) {
           onPress={onPickedUp}
           activeOpacity={0.8}
         >
-          <Check size={17} color="#101010" />
-          <Text className="font-black text-base tracking-wide" style={{ color: '#101010' }}>
+          <Check size={17} color="#ffffff" />
+          <Text className="font-black text-base tracking-wide" style={{ color: '#ffffff' }}>
             PATIENT ON BOARD
           </Text>
         </TouchableOpacity>
@@ -82,17 +82,17 @@ export default function TripBanner({ status, trip, onPickedUp, onArrived }) {
           onPress={onArrived}
           activeOpacity={0.8}
         >
-          <Text className="font-black text-base tracking-wide" style={{ color: '#101010' }}>
+          <Text className="font-black text-base tracking-wide" style={{ color: '#ffffff' }}>
             ARRIVED
           </Text>
-          <ArrowRight size={17} color="#101010" />
+          <ArrowRight size={17} color="#ffffff" />
         </TouchableOpacity>
       )}
       <TouchableOpacity
         className="h-12 rounded-full border border-primary/50 flex-row items-center justify-center gap-1.5"
         onPress={() => alert('Signal requested (MOCK — hardware later)')}
       >
-        <TrafficCone size={15} color="#00d992" />
+        <TrafficCone size={15} color="#06c167" />
         <Text className="text-primary font-extrabold text-[13px] tracking-widest">
           GREEN CORRIDOR — MOCK
         </Text>

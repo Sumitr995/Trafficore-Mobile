@@ -7,8 +7,8 @@ export default function MapPlaceholder() {
   const { location } = useDriverLocation();
   const c = location?.coords;
   return (
-    <View className="h-44 bg-[#161616] border border-border rounded-3xl items-center justify-center gap-1.5 px-4">
-      <Satellite size={30} color="#8b949e" />
+    <View className="h-44 bg-[#f6f6f6] border border-border rounded-3xl items-center justify-center gap-1.5 px-4">
+      <Satellite size={30} color="#6b7280" />
       <Text className="text-ink font-extrabold text-base tracking-wide">
         {c
           ? `${c.latitude.toFixed(5)}, ${c.longitude.toFixed(5)}`

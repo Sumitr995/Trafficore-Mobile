@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Text, TouchableOpacity, View } from 'react-native';
-import { CheckCircle2, Map as MapIcon, Play, Square } from 'lucide-react-native';
+import { CheckCircle2, Map as MapIcon, Navigation, Play, Square } from 'lucide-react-native';
 import DriverMap from './DriverMap';
 import TripBanner from './TripBanner';
 import SignalPanel from './SignalPanel';
@@ -127,24 +127,41 @@ export default function NavigateCard({
             follow={follow}
           />
         </View>
-        <View className="absolute top-3 left-3 bg-background/95 border border-primary/40 px-4 py-2.5 rounded-full">
-          {phase === 'ready' && route ? (
-            <Text className="text-primary font-black text-sm tracking-wide">
-              {formatKm(route.distanceM)} • ~{formatEta(route.durationS)}
-              {follow ? ' • LIVE' : ''}
-            </Text>
-          ) : phase === 'loading' ? (
-            <Text className="text-muted text-xs font-bold">Finding route…</Text>
-          ) : (
-            <Text className="text-muted text-xs font-bold">Route to {destName}</Text>
-          )}
-        </View>
+        {/* compact: small chip; expanded nav: Uber-style bottom-left ETA card */}
+        {!expanded && (
+          <View className="absolute top-3 left-3 bg-background/95 border border-primary/40 px-4 py-2.5 rounded-full">
+            {phase === 'ready' && route ? (
+              <Text className="text-primary font-black text-sm tracking-wide">
+                {formatKm(route.distanceM)} • ~{formatEta(route.durationS)}
+                {follow ? ' • LIVE' : ''}
+              </Text>
+            ) : phase === 'loading' ? (
+              <Text className="text-muted text-xs font-bold">Finding route…</Text>
+            ) : (
+              <Text className="text-muted text-xs font-bold">Route to {destName}</Text>
+            )}
+          </View>
+        )}
+        {expanded && phase === 'ready' && route && (
+          <View className="absolute bottom-4 left-4 flex-row items-center gap-3 bg-background/95 border border-primary/40 rounded-2xl px-4 py-3">
+            <View className="w-10 h-10 rounded-full bg-primary items-center justify-center">
+              <Navigation size={18} color="#ffffff" />
+            </View>
+            <View>
+              <Text className="text-ink font-black text-xl">~{formatEta(route.durationS)}</Text>
+              <Text className="text-muted text-xs font-bold">
+                {formatKm(route.distanceM)}
+                {follow ? ' • LIVE' : ''}
+              </Text>
+            </View>
+          </View>
+        )}
       </View>
 
-      <View className="bg-[#161616] border border-border rounded-3xl p-4 gap-3">
+      <View className="bg-[#f6f6f6] border border-border rounded-3xl p-4 gap-3">
         {phase === 'loading' && (
           <View className="flex-row items-center gap-2">
-            <ActivityIndicator color="#00d992" />
+            <ActivityIndicator color="#06c167" />
             <Text className="text-muted text-xs">Finding road route…</Text>
           </View>
         )}
@@ -157,7 +174,7 @@ export default function NavigateCard({
               className="h-12 rounded-full bg-primary items-center justify-center"
               onPress={() => load()}
             >
-              <Text className="font-black" style={{ color: '#101010' }}>
+              <Text className="font-black" style={{ color: '#ffffff' }}>
                 Retry Route
               </Text>
             </TouchableOpacity>
@@ -165,7 +182,7 @@ export default function NavigateCard({
         )}
         {arrived && (
           <View className="rounded-2xl bg-primary/15 border border-primary/40 px-4 py-3 flex-row items-center gap-2">
-            <CheckCircle2 size={15} color="#00d992" />
+            <CheckCircle2 size={15} color="#06c167" />
             <Text className="text-primary font-black text-[13px] tracking-wide flex-1">
               ARRIVED — {arrivedHint.toUpperCase()}
             </Text>
@@ -178,19 +195,19 @@ export default function NavigateCard({
             activeOpacity={0.8}
           >
             {follow ? (
-              <Square size={15} color="#101010" />
+              <Square size={15} color="#ffffff" />
             ) : (
-              <Play size={15} color="#101010" />
+              <Play size={15} color="#ffffff" />
             )}
-            <Text className="font-black text-base tracking-wide" style={{ color: '#101010' }}>
-              {follow ? 'STOP' : 'START TRIP'}
+            <Text className="font-black text-base tracking-wide" style={{ color: '#ffffff' }}>
+              {follow ? 'STOP' : 'GO'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="h-14 px-5 rounded-full border border-border flex-row items-center gap-1.5 justify-center"
             onPress={openGMaps}
           >
-            <MapIcon size={15} color="#f2f2f2" />
+            <MapIcon size={15} color="#141414" />
             <Text className="text-ink font-extrabold text-sm tracking-widest">MAPS</Text>
           </TouchableOpacity>
         </View>

@@ -21,7 +21,7 @@ export default function SummaryScreen() {
     <View className="flex-1 bg-background px-5 justify-center gap-5">
       <View className="items-center gap-2">
         <View className="w-20 h-20 rounded-full bg-primary items-center justify-center">
-          <Check size={36} color="#101010" />
+          <Check size={36} color="#ffffff" />
         </View>
         <Text className="text-ink text-2xl font-black tracking-tight mt-2">TRIP COMPLETE</Text>
         <Text className="text-muted text-sm">
@@ -30,7 +30,7 @@ export default function SummaryScreen() {
       </View>
 
       {/* receipt */}
-      <View className="bg-[#161616] border border-border rounded-3xl px-5 py-2">
+      <View className="bg-[#f6f6f6] border border-border rounded-3xl px-5 py-2">
         {rows.map(([k, v], i) => (
           <View
             key={k}
@@ -54,8 +54,17 @@ export default function SummaryScreen() {
         }}
         activeOpacity={0.8}
       >
-        <Text className="font-black text-base" style={{ color: '#101010' }}>
+        <Text className="font-black text-base" style={{ color: '#ffffff' }}>
           Done → New Trip
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        className="py-2 items-center"
+        onPress={() => router.push('/history')}
+      >
+        <Text className="text-muted text-xs font-extrabold tracking-widest">
+          VIEW TRIP HISTORY
         </Text>
       </TouchableOpacity>
     </View>

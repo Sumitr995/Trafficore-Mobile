@@ -18,6 +18,9 @@ export default function RootLayout() {
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="landing" options={{ headerShown: false }} />
+          <Stack.Screen name="admin" options={{ title: 'Admin' }} />
+          <Stack.Screen name="hospital" options={{ title: 'Hospital' }} />
           <Stack.Screen name="history" options={{ title: 'Trip History' }} />
           <Stack.Screen name="summary" options={{ title: 'Trip Summary' }} />
         </Stack>

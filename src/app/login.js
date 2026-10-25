@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Redirect } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { Asset } from 'expo-asset';
 import { File } from 'expo-file-system';
 import { WebView } from 'react-native-webview';
@@ -145,6 +145,13 @@ export default function LoginScreen() {
           ⚡ Tap to fill demo login
         </Text>
       </TouchableOpacity>
+
+      <Text
+        className="text-muted text-[11px] text-center tracking-[1.5px] font-semibold mt-6 mb-2"
+        onPress={() => router.push('/landing')}
+      >
+        T R A F F I C O R E   D A S H B O A R D S
+      </Text>
     </ScrollView>
   );
 }

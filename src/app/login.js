@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -8,40 +8,8 @@ import {
   View,
 } from 'react-native';
 import { Redirect, router } from 'expo-router';
-import { Asset } from 'expo-asset';
-import { File } from 'expo-file-system';
-import { WebView } from 'react-native-webview';
 import { Ambulance } from 'lucide-react-native';
 import { DEMO_DRIVER, useAuth } from '../../lib/auth';
-
-// Login hero: the Hairline corridor figure (built self-contained HTML).
-// Bundled asset → read to text → rendered inline; Expo Go denies file:// URIs.
-function CorridorHero() {
-  const [html, setHtml] = useState(null);
-  useEffect(() => {
-    let alive = true;
-    Asset.fromModule(require('../../assets/hairline/hairline-corridor.html'))
-      .downloadAsync()
-      .then((a) => new File(a.localUri || a.uri).textSync())
-      .then((text) => {
-        if (alive) setHtml(text);
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
-  if (!html) return <View style={{ height: 250 }} />;
-  return (
-    <WebView
-      source={{ html }}
-      style={{ height: 250 }}
-      scrollEnabled={false}
-      originWhitelist={['*']}
-      javaScriptEnabled
-    />
-  );
-}
 
 export default function LoginScreen() {
   const { user, loading, signIn } = useAuth();
@@ -66,8 +34,6 @@ export default function LoginScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24 }}>
-      <CorridorHero />
-
       {/* Brand */}
       <View className="items-center mb-6">
         <View className="w-14 h-14 rounded-2xl bg-primary items-center justify-center mb-3">

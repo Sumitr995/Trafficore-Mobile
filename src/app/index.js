@@ -4,6 +4,7 @@ import { History, LogOut, Siren } from 'lucide-react-native';
 import { Redirect, router } from 'expo-router';
 import { useAuth } from '../../lib/auth';
 import { useTrip } from '../../lib/trip';
+import { setLivePos } from '../../lib/dummy';
 import { useDriverLocation } from '../../hooks/useLocation';
 import DriverMap from '../../components/DriverMap';
 import NavigateCard from '../../components/NavigateCard';
@@ -15,11 +16,14 @@ export default function HomeScreen() {
   const t = useTrip();
   const { location } = useDriverLocation();
 
-  // Trip telemetry: publish GPS to the broker while a leg is live.
+  // Trip telemetry + corridor feed: share GPS across the app while live.
   useEffect(() => {
-    if (location?.coords) t.publishPosition(location.coords);
+    if (location?.coords) {
+      setLivePos(location.coords);
+      t.publishPosition(location.coords);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location?.latitude, location?.longitude]);
+  }, [location?.coords?.latitude, location?.coords?.longitude]);
 
   if (loading) {
     return (

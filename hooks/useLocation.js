@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
+import { livePos, onPosChange, fleetWithLive, ambulances } from '../lib/dummy';
 
 // Single place for all GPS logic.
 // High accuracy + update every ~3s / 5m (matches M1 spec).
@@ -56,4 +57,17 @@ export function useDriverLocation() {
   }, []);
 
   return { location, status, errorMsg, retry: startWatching };
+}
+
+// Corridor console view of live GPS: prefer the streaming driver feed
+// (setLivePos), fall back to this device's own GPS fix for the demo.
+export function useCorridorLive() {
+  const { location } = useDriverLocation();
+  const [, setTick] = useState(0);
+  useEffect(() => onPosChange(() => setTick((n) => n + 1)), []);
+  const own = location?.coords?.latitude != null
+    ? [location.coords.latitude, location.coords.longitude]
+    : null;
+  const pos = livePos || own;
+  return { pos, fleet: pos ? fleetWithLive(ambulances, pos) : ambulances };
 }

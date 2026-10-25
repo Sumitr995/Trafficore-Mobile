@@ -11,6 +11,7 @@ import CamFeed from '../../components/CamFeed';
 import {
   ambulances, corridorSignals, hospitals, accessList, camRooms, signalLog,
 } from '../../lib/dummy';
+import { useCorridorLive } from '../../hooks/useLocation';
 
 const navItems = [
   { id: 'corridor', label: 'Corridor Map', Icon: Radio },
@@ -60,6 +61,8 @@ export default function Admin() {
   const [access, setAccess] = useState(accessList);
 
   const amb = ambulances.find((a) => a.id === selected) || ambulances[0];
+  const { pos, fleet } = useCorridorLive();
+  const shown = fleet.find((a) => a.id === amb.id) || amb;
 
   return (
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ padding: 20, ...CONTENT_BOX }}>
@@ -96,7 +99,7 @@ export default function Admin() {
           <View className="flex-row flex-wrap gap-4">
             <View style={{ grow: 1, minWidth: '58%' }}>
               <CorridorMap
-                ambulances={ambulances}
+                ambulances={fleet}
                 signals={corridorSignals}
                 hospital={hospitals.M1}
                 patient={amb?.position}
@@ -139,9 +142,17 @@ export default function Admin() {
                 <View className="flex-row items-center justify-between mb-3">
                   <Text className="text-[13px] font-semibold text-ink">PATIENT DETAILS</Text>
                   <Text className="text-[10px] font-bold tracking-wider text-muted bg-[#f6f6f6] px-2 py-0.5 rounded">
-                    {amb.id} · {amb.status.toUpperCase()}
+                    {amb.id} · {shown.status.toUpperCase()}
                   </Text>
                 </View>
+                {pos && amb.id === 'AMB-07' && (
+                  <View className="flex-row items-center gap-1.5 mb-2">
+                    <View className="w-1.5 h-1.5 rounded-full bg-accent" />
+                    <Text className="text-[10px] font-bold tracking-wider text-accent">
+                      LIVE GPS · {pos[0].toFixed(4)}, {pos[1].toFixed(4)}
+                    </Text>
+                  </View>
+                )}
                 <View className="flex-row items-center gap-3 mb-2">
                   <View className="w-11 h-11 rounded-full bg-primary items-center justify-center">
                     <Text className="text-white font-black">{amb.patient.name[0]}</Text>
@@ -157,7 +168,7 @@ export default function Admin() {
                 <DetailRow label="CONDITION" value={amb.patient.condition} />
                 <DetailRow label="PICKUP" value={amb.patient.pickup} />
                 <DetailRow label="CONTACT" value={amb.patient.contact} />
-                <DetailRow label="ETA TO HOSPITAL" value={amb.eta} />
+                <DetailRow label="ETA TO HOSPITAL" value={shown.eta} />
                 <DetailRow label="NOTES" value={amb.patient.notes} />
               </View>
 

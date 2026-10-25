@@ -5,15 +5,22 @@ import {
   ChevronLeft, Radio, ShieldCheck, Clock3, FilePlus2, Check,
 } from 'lucide-react-native';
 import { CONTENT_BOX } from '../../lib/theme';
-import { corridorSignals } from '../../lib/dummy';
+import { corridorSignals, setLivePos } from '../../lib/dummy';
+import { useDriverLocation } from '../../hooks/useLocation';
 
 // Ambulance side: signal access permission (dummy — request → granted).
 export default function SignalAccess() {
   const router = useRouter();
+  const { location } = useDriverLocation();
   const [phase, setPhase] = useState('idle'); // idle → pending → granted
   const [log, setLog] = useState([
     { signal: 'Anil Kumble Circle', act: 'PASSED', at: '09:38:41' },
   ]);
+
+  useEffect(() => {
+    if (location?.coords) setLivePos(location.coords);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location?.coords?.latitude, location?.coords?.longitude]);
 
   useEffect(() => {
     if (phase !== 'pending') return;

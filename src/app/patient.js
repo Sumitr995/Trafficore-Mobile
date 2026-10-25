@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Check } from 'lucide-react-native';
 import { CONTENT_BOX } from '../../lib/theme';
-import { setLivePatient } from '../../lib/dummy';
+import { setLivePatient, setLivePos } from '../../lib/dummy';
+import { useDriverLocation } from '../../hooks/useLocation';
 
 const conditions = ['Cardiac', 'Trauma', 'Respiratory', 'Stroke', 'Neuro', 'Other'];
 const severities = [
@@ -17,6 +18,7 @@ const severities = [
 // Driver side: fill in patient details before/during transport (dummy store).
 export default function PatientForm() {
   const router = useRouter();
+  const { location } = useDriverLocation();
   const [saved, setSaved] = useState(false);
   const [f, setF] = useState({
     name: '',
@@ -30,6 +32,11 @@ export default function PatientForm() {
   });
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
   const valid = f.name.trim() && f.age.trim() && f.condition && f.pickup.trim();
+
+  useEffect(() => {
+    if (location?.coords) setLivePos(location.coords);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location?.coords?.latitude, location?.coords?.longitude]);
 
   function save() {
     setLivePatient({

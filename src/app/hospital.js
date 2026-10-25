@@ -9,8 +9,9 @@ import { KEYS } from '../../lib/keys';
 import CamFeed from '../../components/CamFeed';
 import ChatPanel from '../../components/ChatPanel';
 import {
-  ambulances, corridorSignals, camRooms, chatSeed, patientOf, onLiveChange,
+  corridorSignals, camRooms, chatSeed, patientOf, onLiveChange,
 } from '../../lib/dummy';
+import { useCorridorLive } from '../../hooks/useLocation';
 
 const beds = [
   { ward: 'ICU', total: 20, occupied: 17, available: 3 },
@@ -35,7 +36,8 @@ export default function Hospital() {
 
   useEffect(() => onLiveChange(() => setForce((f) => f + 1)), []);
 
-  const amb = ambulances.find((a) => a.id === selectedId);
+  const { fleet } = useCorridorLive();
+  const amb = fleet.find((a) => a.id === selectedId);
   const patient = amb ? patientOf(amb.id, amb.patient) : null;
 
   const totalBeds = beds.reduce((a, b) => a + b.total, 0);
@@ -179,7 +181,7 @@ export default function Hospital() {
           <Text className="text-[11px] tracking-[1.5px] text-muted font-semibold mb-2">
             INBOUND AMBULANCES · TAP FOR CONTROL ROOM VIEW
           </Text>
-          {ambulances.map((a) => (
+          {fleet.map((a) => (
             <Pressable
               key={a.id}
               onPress={() => { setSelectedId(a.id); setActiveTab('patient'); }}
